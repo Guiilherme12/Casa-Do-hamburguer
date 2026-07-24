@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Header from "./components/Header";
 import Pedidos from "./pages/Pedidos";
+import PublicRoute from "./components/PublicRoute";
 
 const Layout = () => {
   return (
@@ -22,6 +23,20 @@ export const router = createBrowserRouter([
     ],
   }, //O que está dentro é que receberá o LAYOUT padrão
 
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
+  {
+    path: "/login",
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: "/register",
+    element: (
+      <PublicRoute>
+        <Register />
+      </PublicRoute>
+    ),
+  },
 ]);

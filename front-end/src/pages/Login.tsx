@@ -1,45 +1,101 @@
 import { useState } from "react";
-import Input from "../components/Input";
 import { Link } from "react-router-dom";
+import Input from "../components/Input";
 import Button from "../components/Button";
-const Login = () => {
-  const [email, setEmail] = useState(""); //variável de estado (muda automaticamente o texto quando clica no botão)
-  const [password, setPassword] = useState("");
+import { useNavigate } from "react-router";
 
-  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault(); // Nao recarrega mais a pagina web automaticamento quando envia o formuário
-    console.log(email);
-    console.log(password);
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
+const Login = () => {
+  const [email, setEmail] = useState(""); // variável de estado (muda automaticamente o texto quando clica no botão)
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const { setUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault(); // Não recarrega mais a página web automaticamente quando envia o formulário
+
+    try {
+      if (!email || !password) {
+        setError("E-mail e senha são obrigatórios");
+        return; //Para o código antes que qualquer requisição seja feita para o backend
+      }
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }), // JSON.stringify transforma o objeto em um arquivo do tipo JSON
+        credentials: "include",
+      }); // REQUISIÇÃO
+
+      if (response.status === 404) {
+        setError("Usuário não encontrado");
+        return;
+      }
+
+      if (response.status === 400) {
+        setError("Usuário e senha são obrigatórios");
+        return;
+      }
+
+      if (response.status === 401) {
+        setError("Credenciais inválidas");
+        return;
+      }
+      if (response.status === 500) {
+        setError("Erro de servidor");
+        return;
+      }
+      if (response.status === 200) {
+        setError("");
+        const data = await response.json();
+        navigate("/");
+        setUser(data);
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   }
+
   return (
     <form
       className="flex h-screen items-center justify-center bg-[#161410]"
       onSubmit={handleSubmit}
     >
-      <div className="flex flex-col items-center justify-center gap-2">
+      <div className="flex flex-col justify-center gap-2">
         <Link to="/">
-          <img src="./logo.png" alt="" className="mb-4" />
+          <img src="./logo.png" alt="" className="mx-auto mb-4" />
         </Link>
 
-        <Input
-          placeholder="E-mail"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Input
-          placeholder="Senha"
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="mb-3 flex flex-col gap-2">
+          <Input
+            placeholder="E-mail"
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+          />
 
-        <Button title="Login" variant="default" />
+          <Input
+            placeholder="Senha"
+            type="password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <p className="text-left text-sm font-bold text-red-500">{error}</p>
+        </div>
+
+        <Button title="Login" variant="default" type="submit" />
+
         <Link to="/register" className="w-full">
-        <Button title ="Não tenho uma conta" variant="outline" />
+          <Button title="Não tenho uma conta" variant="outline" />
         </Link>
 
         {/*<button className="w-full cursor-pointer rounded-md bg-[#C92A0E] py-2 text-sm font-bold text-white">
           Login
         </button>*/}
-        
       </div>
     </form>
   );
