@@ -79,9 +79,10 @@ const Home = () => {
             price={products.price}
             key={products.id}
             category={products.category}
+            setProducts={setProducts}
           />
         ))}
-        {filteredProduct.length=== 0 && <p>Não há produtos dessa categoria</p>}
+        {filteredProduct.length === 0 && <p>Não há produtos dessa categoria</p>}
       </div>
     </div>
   );
