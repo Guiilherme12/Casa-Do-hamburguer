@@ -6,22 +6,31 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
 model User {
-  id       String  @id @default(uuid())
-  name     String
-  email    String  @unique
-  password String
-  cep      String
-  admin    Boolean @default(false)
+  id        String     @id @default(dbgenerated("gen_random_uuid()::text"))
+  name      String
+  email     String     @unique
+  password  String
+  cep       String
+  admin     Boolean    @default(false)
+  cartItems CartItem[]
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String     @id @default(dbgenerated("gen_random_uuid()::text"))
   name        String
   description String
   price       Int
   img         String
-  category String 
-  createdAt   DateTime @default(now())
+  createdAt   DateTime   @default(now())
+  category    String
+  cartItems   CartItem[]
+}
+
+model CartItem {
+  id        String  @id @default(dbgenerated("gen_random_uuid()::text"))
+  productId String
+  userId    String
+  product   Product @relation(fields: [productId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
 }
