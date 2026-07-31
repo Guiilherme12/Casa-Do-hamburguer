@@ -3,9 +3,11 @@ import { UserContext } from "../contexts/UserContext";
 import { useContext, useEffect, useState } from "react";
 import { LogOut, ShoppingCart, Box, LayoutDashboard, Plus } from "lucide-react";
 import Cart from "./Cart";
+import { CartItemContext } from "../contexts/CartItemsContext";
 const Header = () => {
   const [showCart, setShowCart] = useState<boolean>(false);
   const { user, setUser } = useContext(UserContext);
+  const { cartItems } = useContext(CartItemContext);
   const location = useLocation();
 
   const handleAuthUser = async () => {
@@ -71,9 +73,6 @@ const Header = () => {
         <Link to="/">
           <img src="./logo.png" alt="" />
         </Link>
-        <Link to="/login" className="text-white">
-          Login
-        </Link>
         {user ? (
           <div className="flex items-center gap-8 text-white">
             {user.admin && ( //caso o usuario seja admin, realizar o que está dentro do parentese
@@ -100,7 +99,7 @@ const Header = () => {
               <ShoppingCart size={18} onClick={() => setShowCart(!showCart)} />
 
               <p className="absolute -top-4 -right-4 flex h-5 w-5 justify-center justify-items-center rounded-full bg-[#F2DAAC] text-[#161410]">
-                1
+               {cartItems.length}
               </p>
             </div>
 
