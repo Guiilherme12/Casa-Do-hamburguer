@@ -3,13 +3,14 @@ import Button from "./Button";
 import CartItem from "./CartItem";
 import { useContext, useEffect } from "react";
 import { CartItemContext } from "../contexts/CartItemsContext";
+import Product from "./Product";
 type CartTypeProps = {
   setShowCart: React.Dispatch<React.SetStateAction<boolean>>;
   showCart: boolean;
 };
 const Cart = ({ setShowCart, showCart }: CartTypeProps) => {
   //const [cartItems, setCartItems] = useState<CartiItemType[]>([]);
-  const { cartItems, setCartItems } = useContext(CartItemContext)
+  const { cartItems, setCartItems } = useContext(CartItemContext);
   const getCartItems = async () => {
     try {
       const response = await fetch("http://localhost:3000/get-cart-items", {
@@ -21,6 +22,7 @@ const Cart = ({ setShowCart, showCart }: CartTypeProps) => {
         return;
       }
       const data = await response.json(); // Transforma as informações me um arquivo JSON
+      console.log(data);
       setCartItems(data);
     } catch (error) {
       console.log(error);
@@ -46,6 +48,7 @@ const Cart = ({ setShowCart, showCart }: CartTypeProps) => {
             price={item.product.price}
             img={item.product.img}
             id={item.product.id}
+            quantity={item.quantity}
           />
         ))}
       </div>
